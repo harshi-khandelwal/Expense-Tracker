@@ -16,7 +16,6 @@ import { nanoid } from '@reduxjs/toolkit';
   });
 
 
-
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -26,8 +25,11 @@ import { nanoid } from '@reduxjs/toolkit';
     const newTransaction = {
       id: nanoid(),
       ...form,
-      amount: parseInt(form.amount),
+      amount: Math.abs(parseInt(form.amount)),
+
     };
+
+  
 
     dispatch(addTransaction(newTransaction));
 
@@ -35,16 +37,16 @@ import { nanoid } from '@reduxjs/toolkit';
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md space-y-4 max-w-3xl mx-auto mt-4">
+    <form onSubmit={handleSubmit} className="bg-add-body p-6 rounded shadow-md space-y-4 max-w-3xl mx-auto mt-4">
       <h2 className="text-2xl font-bold text-center">Add Transaction</h2>
 
         <input
-        type="number"
+        type=""
         name="amount"
         value={form.amount}
         onChange={handleChange}
         placeholder="Amount"
-        className="w-full border p-2 rounded"
+        className="w-full bg-summary border p-2 rounded"
         required
       />
 
@@ -54,7 +56,7 @@ import { nanoid } from '@reduxjs/toolkit';
         value={form.category}
         onChange={handleChange}
         placeholder="Category"
-        className="w-full border p-2 rounded"
+        className="w-full  bg-summary border p-2 rounded"
         required
       />
 
@@ -64,7 +66,7 @@ import { nanoid } from '@reduxjs/toolkit';
         value={form.description}
         onChange={handleChange}
         placeholder="Description"
-        className="w-full border p-2 rounded"    
+        className="w-full  bg-summary border p-2 rounded"    
         required    
       />
 
@@ -73,7 +75,7 @@ import { nanoid } from '@reduxjs/toolkit';
         name="date"
         value={form.date}
         onChange={handleChange}
-        className="w-full border p-2 rounded"
+        className="w-full  bg-summary border p-2 rounded"
         required
       />
 
@@ -81,13 +83,13 @@ import { nanoid } from '@reduxjs/toolkit';
         name="type"
         value={form.type}
         onChange={handleChange}
-        className="w-full border p-2 rounded"
+        className="w-full bg-summary border p-2 rounded"
       >
-        <option value="expense">Expense</option>
+        <option className= ""value="expense">Expense</option>
         <option value="income">Income</option>
       </select>
 
-      <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded w-full">
+      <button type="submit" className="bg-buttons text-black px-4 py-2 rounded w-full">
         Add Transaction
       </button>
     </form>
