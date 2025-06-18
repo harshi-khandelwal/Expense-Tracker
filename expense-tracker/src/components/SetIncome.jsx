@@ -1,17 +1,18 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setBudget } from '../features/budgets/budgetSlice';
+import { setIncome, resetIncome } from '../features/income/incomeSlice';
 
-export default function SetBudget() {
-  const dispatch = useDispatch();
-  const budget = useSelector((state) => state.budget.amount);
+export default function SetIncome() {
   const [input, setInput] = useState('');
-  const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
+  const dispatch = useDispatch();
+  const income = useSelector((state) => state.income.amount);
 
   const handleSubmit = () => {
     if (!isNaN(input) && input > 0) {
-      dispatch(setBudget(Number(input)));
+      dispatch(setIncome(Number(input)));
       setInput('');
       setIsEditing(false);
     } else {
@@ -19,25 +20,25 @@ export default function SetBudget() {
     }
   };
 
-  const handleReset = () => {
-    dispatch(setBudget(0));
-    setIsEditing(false);
-    setInput('');
+  const handleEdit = () => {
+    setInput(income.toString());
+    setIsEditing(true);
   };
 
-  const handleEdit = () => {
-    setInput(budget.toString());
-    setIsEditing(true);
+  const handleReset = () => {
+    dispatch(resetIncome());
+    setInput('');
+    setIsEditing(false);
   };
 
   return (
   <div className="flex flex-col gap-3 mb-4 max-w-3xl mx-auto">
-  {/* modal */}
+  {/* modal for invalid input */}
   {showModal && (
     <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 dark:bg-opacity-50 z-50">
       <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg max-w-sm w-full text-center text-gray-900 dark:text-gray-100">
-        <h2 className="text-xl font-semibold mb-2 text-red-600">Invalid Budget</h2>
-        <p className="mb-4">Please enter a valid number greater than 0</p>
+        <h2 className="text-xl font-semibold mb-2 text-red-800 dark:text-red-400">Invalid Income</h2>
+        <p className="mb-4">Please enter a valid number</p>
         <button
           onClick={() => setShowModal(false)}
           className="bg-blue-950 text-white px-4 py-2 rounded hover:bg-blue-900"
@@ -48,28 +49,31 @@ export default function SetBudget() {
     </div>
   )}
 
-  {/* budget set  */}
-  {(budget === 0 || isEditing) ? (
+  {(income === 0 || isEditing) && (
     <div className="flex items-center gap-3">
       <input
         type="number"
         min={0}
-        placeholder="Enter Monthly Budget (Rs.)"
+        placeholder="Set Monthly Income (Rs.)"
         value={input}
         onChange={(e) => setInput(e.target.value)}
         className="p-4 rounded w-full border-green-300 border-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
       />
+      {/* set inc */}
       <button
         onClick={handleSubmit}
         className="bg-green-700 text-white px-4 py-2 rounded-2xl hover:bg-green-800"
       >
-        {isEditing ? 'Update' : 'Set Budget'}
+        {isEditing ? 'Update' : 'Set Income'}
       </button>
     </div>
-  ) : (
+  )}
+
+  
+  {income > 0 && !isEditing && (
     <div className="text-center space-y-2 text-gray-900 dark:text-white">
       <div className="text-blue-900 dark:text-blue-300 text-3xl font-semibold">
-        Your Monthly Budget: Rs. {budget}
+        Your Monthly Income: Rs. {income}
       </div>
       <div className="flex justify-center gap-4">
         {/* edit */}
@@ -80,7 +84,7 @@ export default function SetBudget() {
           Edit
         </button>
         {/* reset */}
-        <button 
+        <button
           onClick={handleReset}
           className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700"
         >
@@ -93,3 +97,4 @@ export default function SetBudget() {
 
   );
 }
+

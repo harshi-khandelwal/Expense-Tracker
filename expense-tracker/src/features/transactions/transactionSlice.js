@@ -1,55 +1,124 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, nanoid } from '@reduxjs/toolkit';
+import dayjs from 'dayjs';
 
-
-//step 1 loading from local storage 
-const loadFromLocalStorage = () => {
+//  step 1 loading
+const loadFromLocalStorage = (key) => {
   try {
-    const saved = localStorage.getItem("transactions");
+    const saved = localStorage.getItem(key);
     return saved ? JSON.parse(saved) : [];
   } catch {
     return [];
   }
 };
 
-//step 2 saving to local storage 
-const saveToLocalStorage = (transactions) => {
-    localStorage.setItem("transactions", JSON.stringify(transactions))
-}
-
-//step 3 initialise the state 
-const initialState = {
-  transactions: loadFromLocalStorage(),
+const saveToLocalStorage = (key, data) => {
+  localStorage.setItem(key, JSON.stringify(data));
 };
 
+// initailising
+const initialState = {
+  transactions: loadFromLocalStorage('transactions'),
+  subscriptions: loadFromLocalStorage('subscriptions'),
+};
 
-//step 4 define reducers
+// add reducers
 const transactionSlice = createSlice({
   name: 'transactions',
   initialState,
   reducers: {
-
-// features are (add, delete, edit,) 
-
-    addTransaction : (state, action) => {
-      state.transactions.push(action.payload)
-      saveToLocalStorage(state.transactions)
+    // add transac
+    addTransaction: (state, action) => {
+      state.transactions.push(action.payload);
+      saveToLocalStorage('transactions', state.transactions);
     },
 
-    deleteTransaction : (state, action) => {
+    // delete transac
+    deleteTransaction: (state, action) => {
       state.transactions = state.transactions.filter(t => t.id !== action.payload);
-      saveToLocalStorage(state.transactions);
+      saveToLocalStorage('transactions', state.transactions);
     },
 
+    // edit transac
     editTransaction: (state, action) => {
       const index = state.transactions.findIndex(t => t.id === action.payload.id);
       if (index !== -1) {
         state.transactions[index] = action.payload;
-        saveToLocalStorage(state.transactions);
+        saveToLocalStorage('transactions', state.transactions);
       }
     },
-  }
+
+    // add subs
+   addSubscription: (state, action) => {
+  const newSub = {
+    ...action.payload,
+    id: nanoid(),
+    dateAdded: dayjs().format('YYYY-MM-DD'),
+    paused: false,
+    nextPaymentDate: dayjs().add(1, 'month').format('DD-MM-YYYY'), // ✅ fixed
+  };
+  state.subscriptions.push(newSub);
+  saveToLocalStorage('subscriptions', state.subscriptions);
+
+  // add immediate expense on submit  to the trans list
+  const newTransaction = {
+    id: nanoid(),
+    name: newSub.name,
+    amount: newSub.amount,
+    category: newSub.category,
+    type: 'expense',
+    date: dayjs().format('DD-MM-YY'),
+  };
+  state.transactions.push(newTransaction);
+  saveToLocalStorage('transactions', state.transactions);
+},
+
+    // delete subs
+    deleteSubscription: (state, action) => {
+      state.subscriptions = state.subscriptions.filter(s => s.id !== action.payload);
+      saveToLocalStorage('subscriptions', state.subscriptions);
+    },
+
+    // toggle 
+    togglePauseSubscription: (state, action) => {
+      const sub = state.subscriptions.find(s => s.id === action.payload);
+      if (sub) {
+        sub.paused = !sub.paused;
+        saveToLocalStorage('subscriptions', state.subscriptions);
+      }
+    },
+
+    // auto add subs
+    autoAddSubscriptions: (state) => {
+      const today = dayjs();
+
+      state.subscriptions.forEach((sub) => {
+        if (sub.paused) return;
+
+        const nextPayDate = dayjs(sub.nextPaymentDate);
+        const alreadyAdded = state.transactions.some(t =>
+          t.name === sub.name && dayjs(t.date).isSame(today, 'day')
+        );
+
+        if (today.isSame(nextPayDate, 'day') && !alreadyAdded) {
+         
+          state.transactions.push({
+            id: nanoid(),
+            name: sub.name,
+            amount: sub.amount,
+            type: 'expense',
+            category: sub.category,
+            date: today.format('DD-MM-YYYY'),
+          });
+
+          sub.nextPaymentDate = nextPayDate.add(1, 'month').format('DD-MM-YYYY');
+        }
+      });
+
+      saveToLocalStorage('transactions', state.transactions);
+      saveToLocalStorage('subscriptions', state.subscriptions);
+    },
+  },
 });
 
-// import reducers independently as well as with its slice 
-export const { addTransaction, deleteTransaction, editTransaction } = transactionSlice.actions;
+export const { addTransaction, deleteTransaction, editTransaction, addSubscription, deleteSubscription, togglePauseSubscription, autoAddSubscriptions} = transactionSlice.actions;
 export default transactionSlice.reducer;
