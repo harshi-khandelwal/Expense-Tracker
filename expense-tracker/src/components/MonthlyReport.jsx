@@ -28,6 +28,7 @@ const MonthlyReport = () => {
             el.removeAttribute('class');
             el.style.backgroundColor = '#ffffff';
             el.style.color = '#000000';
+            el.style.padding = '15px'
           });
         },
       });

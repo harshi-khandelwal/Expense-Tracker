@@ -1,9 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const savedBudget = localStorage.getItem('budgetAmount');
+const initialBudget = savedBudget ? parseFloat(savedBudget) : 0;
 const budgetSlice = createSlice({
      name: 'budget',
         initialState: {
-    amount: 0,
+    amount: initialBudget,
     alertShown: false, 
     isBudgetExceeded: false,
     allowOverBudgetTransaction: null, 
@@ -13,6 +15,7 @@ reducers: {
     setBudget(state, action) {
       state.amount = action.payload;
       state.alertShown = false; 
+      localStorage.setItem('budgetAmount', action.payload);
     },
 
     markAlertShown(state) {

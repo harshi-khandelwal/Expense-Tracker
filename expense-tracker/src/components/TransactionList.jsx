@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteTransaction } from '../features/transactions/transactionSlice';
 import EditTransactionForm from './EditTransactionForm';
+import ConfirmModal from './ConfirmModal';
 
 function TransactionList({ filters = {} }) {
   const transactions = useSelector((state) => state.transactions.transactions);
@@ -16,6 +17,9 @@ function TransactionList({ filters = {} }) {
     const dateMatch = filters.date ? trans.date === filters.date : true;
     return categoryMatch && dateMatch;
   });
+
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [transToDelete, setTransToDelete] = useState(null);
 
   return (
   <div className="max-w-full mx-5 mt-6">
@@ -61,7 +65,10 @@ function TransactionList({ filters = {} }) {
                   Edit
                 </button>
                 <button
-                  onClick={() => dispatch(deleteTransaction(trans.id))}
+                 onClick={() => {
+                setTransToDelete(trans.id);
+                setShowConfirmModal(true);
+                }}
                   className="text-red-700 dark:text-red-400 hover:underline"
                 >
                   Delete
@@ -73,8 +80,22 @@ function TransactionList({ filters = {} }) {
       )}
     </ul>
   )}
+    {showConfirmModal && (
+  <ConfirmModal
+    title="Delete Transaction"
+    message="Are you sure you want to delete this transaction? This action cannot be undone."
+    onConfirm={() => {
+      dispatch(deleteTransaction(transToDelete));
+      setShowConfirmModal(false);
+      setTransToDelete(null);
+    }}
+    onCancel={() => {
+      setShowConfirmModal(false);
+      setTransToDelete(null);
+    }}
+  />
+)}
 </div>
-
 
   );}
 export default TransactionList;

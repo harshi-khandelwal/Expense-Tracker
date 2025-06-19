@@ -10,6 +10,7 @@ function Summary() {
   const alertShown = useSelector((state) => state.budget.alertShown);
   const budgetExceeded = useSelector((state) => state.budget.budgetExceeded);
   const income = useSelector((state) => state.income.amount); 
+  const saved = useSelector((state) => state.goals.savedTotal);
 
   const [show80Modal, setShow80Modal] = useState(false);
 
@@ -82,6 +83,9 @@ function Summary() {
     </div>
     <div className="text-red-600 dark:text-red-400 text-2xl font-semibold">
       Expenses : Rs. {totalExpenses}
+    </div>
+    <div className="text-blue-900 dark:text-blue-700 text-2xl font-semibold">
+      Saved : Rs. {saved}
     </div>
     <div className="font-semibold text-2xl text-gray-900 dark:text-white">
       Balance : Rs. {balance}

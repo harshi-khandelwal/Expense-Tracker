@@ -14,7 +14,7 @@ function AddTransaction() {
     description: '',
     amount: '',
     category: '',
-    date: '',
+    date: new Date().toISOString().split('T')[0],
   })
 
   const [showDropdown, setShowDropdown] = useState(false);

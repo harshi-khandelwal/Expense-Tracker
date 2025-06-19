@@ -15,6 +15,7 @@ const Subscriptions = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [showErrorModal, setShowErrorModal] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [frequency, setFrequency] = useState('monthly')
 
   const handleAddSubscription = () => {
     if (!name   ||!amount ||  !category || Number(amount) <= 0) 
@@ -28,6 +29,7 @@ const Subscriptions = () => {
       name,
       amount: Number(amount),
       category,
+      frequency
     };
 
     dispatch(addSubscription(subData));
@@ -36,6 +38,7 @@ const Subscriptions = () => {
     setName('')
     setAmount('')
     setCategory('')
+    setFrequency('')
   };
 
   const handleDelete = (id) => {
@@ -85,10 +88,20 @@ const Subscriptions = () => {
 
       className="border border-gray-300 dark:border-gray-700 p-3 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-950 transition"
     />
+    <select
+      value={frequency}
+      onChange={(e) => setFrequency(e.target.value)}
+      className="border border-gray-300 dark:border-gray-700 p-3 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+    >
+      <option  value="monthly">Monthly</option>
+      <option  value="quarterly">Quarterly</option>
+      <option  value="yearly">Yearly</option>
+    </select>
+
     <input
       type="number"
       value={amount}
-      placeholder="Monthly Amount (Rs.)"
+      placeholder="Amount (Rs.)"
       onChange={(e) => setAmount(e.target.value)}
       className="border border-gray-300 dark:border-gray-700 p-3 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-950 transition"
       min={1}

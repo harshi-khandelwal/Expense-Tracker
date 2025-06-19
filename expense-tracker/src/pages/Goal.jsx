@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addGoal, deleteGoal, updateGoalPercentage, updateAllGoalPercentages,  setAllocatedIncomePercentage, resetGoalPercentages, transferToGoals, autoTransferMonthly} from '../features/goals/goalSlice';
-
+import ConfirmModal from '../components/ConfirmModal';
 import Modal from '../components/Modal';
 
 export default function Goal() {
@@ -19,6 +19,9 @@ export default function Goal() {
   const [showManualModal, setShowManualModal] = useState(false)
   const [manualPercentages, setManualPercentages] = useState([])
 
+
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [goalToDelete, setGoalToDelete] = useState(null);
   useEffect(() => {
     dispatch(autoTransferMonthly(income))
   }, [dispatch, income])
@@ -138,12 +141,18 @@ const showModal = ({ title, message, type = 'info', buttonText = 'Close' }) => {
         onChange={(e) => setIncomeAllocation(e.target.value)}
         className="p-4 w-full border-green-300 dark:border-green-500 dark:text-white border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-300 dark:focus:ring-green-500"
       />
+      <div className='relative group inline-block'>
       <button
         onClick={handleUpdateIncomeAllocation}
         className="bg-green-600 hover:bg-green-700 text-white px-4 py-3 text-2xl rounded-lg w-full font-semibold transition"
       >
         Update Income Allocation (%)
       </button>
+      <div className="absolute left-1/2 -translate-x-1/2 top-full mb-2 w-64 text-center text-sm bg-white text-black p-2 rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none transition dark:bg-gray-800 dark:text-white">
+    This allows you to set what percentage of your income will be saved into goals every month.
+  </div>
+      </div>
+     
 
       <div className="mb-4 grid sm:grid-cols-2 gap-4">
         <button
@@ -235,7 +244,10 @@ const showModal = ({ title, message, type = 'info', buttonText = 'Close' }) => {
             </div>
 
             <button
-              onClick={() => dispatch(deleteGoal(goal.id))}
+              onClick={() => {
+                setGoalToDelete(goal.id);
+                setShowConfirmModal(true);
+              }}
               className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded mt-4 font-semibold transition"
             >
               Delete Goal
@@ -254,14 +266,17 @@ const showModal = ({ title, message, type = 'info', buttonText = 'Close' }) => {
         {manualPercentages.map((g, idx) => (
           <div key={g.id}>
             <label className="block font-medium mb-1 text-gray-700 dark:text-gray-300">{g.name}</label>
-            <input
-              type="number"
-              value={g.percentage}
-              onChange={(e) => {
-                const updated = [...manualPercentages];
-                updated[idx].percentage = Number(e.target.value);
-                setManualPercentages(updated);
-              }}
+         
+              <input
+                type="number"
+                value={g.percentage}
+                onChange={(e) => {
+                  const input = e.target.value;
+                  const cleanValue = input === '' ? '' : Number(input);
+                  const updated = [...manualPercentages];
+                  updated[idx].percentage = cleanValue;
+                  setManualPercentages(updated);
+                }}
               className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
               min="0"
               max="100"
@@ -283,6 +298,22 @@ const showModal = ({ title, message, type = 'info', buttonText = 'Close' }) => {
       </div>
     </div>
   )}
+  {showConfirmModal && (
+  <ConfirmModal
+    title="Delete Goal"
+    message="Are you sure you want to delete this goal? This action cannot be undone."
+    onConfirm={() => {
+      dispatch(deleteGoal(goalToDelete));
+      setShowConfirmModal(false);
+      setGoalToDelete(null);
+    }}
+    onCancel={() => {
+      setShowConfirmModal(false);
+      setGoalToDelete(null);
+    }}
+  />
+)}
+
 </div>
 
 

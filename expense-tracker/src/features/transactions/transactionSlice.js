@@ -48,13 +48,21 @@ const transactionSlice = createSlice({
     },
 
     // add subs
-   addSubscription: (state, action) => {
+ addSubscription: (state, action) => {
+  const { name, amount, category, frequency = 'monthly' } = action.payload;
+
   const newSub = {
-    ...action.payload,
     id: nanoid(),
+    name,
+    amount,
+    category,
+    frequency, // monthly / quarterly / yearly
     dateAdded: dayjs().format('YYYY-MM-DD'),
     paused: false,
-    nextPaymentDate: dayjs().add(1, 'month').format('DD-MM-YYYY'), // ✅ fixed
+    nextPaymentDate: dayjs().add(
+      frequency === 'monthly' ? 1 : frequency === 'quarterly' ? 3 : 12,
+      'month'
+    ).format('YYYY-MM-DD'),
   };
   state.subscriptions.push(newSub);
   saveToLocalStorage('subscriptions', state.subscriptions);
@@ -66,57 +74,52 @@ const transactionSlice = createSlice({
     amount: newSub.amount,
     category: newSub.category,
     type: 'expense',
-    date: dayjs().format('DD-MM-YY'),
+    date: dayjs().format('YYYY-MM-DD'),
   };
+
   state.transactions.push(newTransaction);
   saveToLocalStorage('transactions', state.transactions);
 },
 
-    // delete subs
-    deleteSubscription: (state, action) => {
-      state.subscriptions = state.subscriptions.filter(s => s.id !== action.payload);
-      saveToLocalStorage('subscriptions', state.subscriptions);
-    },
+deleteSubscription: (state, action) => {
+  state.subscriptions = state.subscriptions.filter(s => s.id !== action.payload);
+  saveToLocalStorage('subscriptions', state.subscriptions);
+},
 
-    // toggle 
-    togglePauseSubscription: (state, action) => {
-      const sub = state.subscriptions.find(s => s.id === action.payload);
-      if (sub) {
-        sub.paused = !sub.paused;
-        saveToLocalStorage('subscriptions', state.subscriptions);
-      }
-    },
+togglePauseSubscription: (state, action) => {
+  const sub = state.subscriptions.find(s => s.id === action.payload);
+  if (sub) {
+    sub.paused = !sub.paused;
+    saveToLocalStorage('subscriptions', state.subscriptions);
+  }
+},
 
-    // auto add subs
-    autoAddSubscriptions: (state) => {
-      const today = dayjs();
-
-      state.subscriptions.forEach((sub) => {
-        if (sub.paused) return;
-
-        const nextPayDate = dayjs(sub.nextPaymentDate);
-        const alreadyAdded = state.transactions.some(t =>
-          t.name === sub.name && dayjs(t.date).isSame(today, 'day')
-        );
-
-        if (today.isSame(nextPayDate, 'day') && !alreadyAdded) {
-         
-          state.transactions.push({
-            id: nanoid(),
-            name: sub.name,
-            amount: sub.amount,
-            type: 'expense',
-            category: sub.category,
-            date: today.format('DD-MM-YYYY'),
-          });
-
-          sub.nextPaymentDate = nextPayDate.add(1, 'month').format('DD-MM-YYYY');
-        }
+autoAddSubscriptions: (state) => {
+  const today = dayjs();
+  state.subscriptions.forEach((sub) => {
+    if (sub.paused) return;
+    const nextPayDate = dayjs(sub.nextPaymentDate);
+    const alreadyAdded = state.transactions.some(t =>
+      t.name === sub.name && dayjs(t.date).isSame(today, 'day')
+    );
+    if (today.isSame(nextPayDate, 'day') && !alreadyAdded) {
+      state.transactions.push({
+        id: nanoid(),
+        name: sub.name,
+        amount: sub.amount,
+        type: 'expense',
+        category: sub.category,
+        date: today.format('YYYY-MM-DD'),
       });
+      const interval = sub.frequency === 'monthly' ? 1 : sub.frequency === 'quarterly' ? 3 : 12;
+      sub.nextPaymentDate = nextPayDate.add(interval, 'month').format('YYYY-MM-DD');
+    }
+  });
 
-      saveToLocalStorage('transactions', state.transactions);
-      saveToLocalStorage('subscriptions', state.subscriptions);
-    },
+  saveToLocalStorage('transactions', state.transactions);
+  saveToLocalStorage('subscriptions', state.subscriptions);
+},
+
   },
 });
 
