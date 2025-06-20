@@ -62,7 +62,7 @@ export default function SetIncome() {
       {/* set inc */}
       <button
         onClick={handleSubmit}
-        className="bg-pink-700 text-white px-4 py-2 rounded-2xl hover:bg-green-800"
+        className="bg-green-700 text-white px-4 py-2 rounded-2xl hover:bg-green-800"
       >
         {isEditing ? 'Update' : 'Set Income'}
       </button>
