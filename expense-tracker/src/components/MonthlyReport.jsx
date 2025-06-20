@@ -48,61 +48,63 @@ const MonthlyReport = () => {
   };
 
   return (
-    <div className="bg-white  p-4 rounded shadow-md mt-2 text-gray-900 ">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Monthly Report</h2>
-        <button
-          onClick={handleDownload}
-          className={`${
-            loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-900 hover:bg-blue-950'
-          } text-white px-4 py-2 rounded`}
-          disabled={loading}
-        >
-          {loading ? 'Generating...' : 'Download PDF'}
-        </button>
-      </div>
+    <div className="bg-white dark:bg-gray-800 p-4 rounded shadow-md mt-2 text-gray-900 dark:text-white">
+  <div className="flex justify-between items-center mb-4">
+    <h2 className="text-2xl font-bold">Monthly Report</h2>
+    <button
+      onClick={handleDownload}
+      className={`${
+        loading ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed' : 'bg-blue-900 hover:bg-blue-950 dark:bg-blue-700 dark:hover:bg-blue-800'
+      } text-white px-4 py-2 rounded`}
+      disabled={loading}
+    >
+      {loading ? 'Generating...' : 'Download PDF'}
+    </button>
+  </div>
 
-      <div
-        ref={reportRef}
-        className="bg-white  text-black p-4 rounded-lg w-full"
-      >
-        {/* add summary */}
-        <div className="mb-4">
-          <p className="font-semibold">Total Income: Rs. {income}</p>
-          <p className="font-semibold">Total Expenses: Rs. {expenses}</p>
-          <p className="font-semibold">Balance: Rs. {balance}</p>
-        </div>
-
-{/* transacion list  */}
-        <div className="mt-4">
-          <h3 className="font-semibold text-2xl mb-2">Transactions</h3>
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr className="bg-gray-200 ">
-                <th className="border border-gray-300  p-2">Date</th>
-                <th className="border border-gray-300  p-2">Category</th>
-                <th className="border border-gray-300  p-2">Amount</th>
-                <th className="border border-gray-300  p-2">Type</th>
-              </tr>
-            </thead>
-            <tbody>
-              {transactions.map((tx) => (
-                <tr key={tx.id} className="text-center">
-                  <td className="border border-gray-300 p-2">{tx.date}</td>
-                  <td className="border border-gray-300 p-2">{tx.category}</td>
-                  <td className="border border-gray-300 p-2">Rs. {tx.amount}</td>
-                  <td className="border border-gray-300 p-2 capitalize">{tx.type}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-{/* add charts  */}
-        <div className="mt-6">
-          <Charts />
-        </div>
-      </div>
+  <div
+    ref={reportRef}
+    className="bg-white dark:bg-gray-900 text-black dark:text-white p-4 rounded-lg w-full"
+  >
+    {/* Summary */}
+    <div className="mb-4">
+      <p className="font-semibold">Total Income: Rs. {income}</p>
+      <p className="font-semibold">Total Expenses: Rs. {expenses}</p>
+      <p className="font-semibold">Balance: Rs. {balance}</p>
     </div>
+
+    {/* Transaction list */}
+    <div className="mt-4">
+      <h3 className="font-semibold text-2xl mb-2">Transactions</h3>
+      <table className="w-full border-collapse text-sm">
+        <thead>
+          <tr className="bg-gray-200 dark:bg-gray-700 text-black dark:text-white">
+            <th className="border border-gray-300 dark:border-gray-600 p-2">Date</th>
+            <th className="border border-gray-300 dark:border-gray-600 p-2">Category</th>
+            <th className="border border-gray-300 dark:border-gray-600 p-2">Amount</th>
+            <th className="border border-gray-300 dark:border-gray-600 p-2">Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          {transactions.map((tx) => (
+            <tr key={tx.id} className="text-center text-black dark:text-white">
+              <td className="border border-gray-300 dark:border-gray-600 p-2">{tx.date}</td>
+              <td className="border border-gray-300 dark:border-gray-600 p-2">{tx.category}</td>
+              <td className="border border-gray-300 dark:border-gray-600 p-2">Rs. {tx.amount}</td>
+              <td className="border border-gray-300 dark:border-gray-600 p-2 capitalize">{tx.type}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    {/* Charts */}
+    <div className="mt-6">
+      <Charts />
+    </div>
+  </div>
+</div>
+
   );
 };
 

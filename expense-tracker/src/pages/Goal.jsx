@@ -22,6 +22,7 @@ export default function Goal() {
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [goalToDelete, setGoalToDelete] = useState(null);
+  const monthlyTransferred = useSelector((state) => state.goals.monthlyTransferred);
   useEffect(() => {
     dispatch(autoTransferMonthly(income))
   }, [dispatch, income])
@@ -51,6 +52,14 @@ export default function Goal() {
   return
       
     }
+      if (goals.length > 0 && percent === 100) {
+    showModal({
+      title: 'Invalid Allocation',
+      message: '100% allocation is not allowed unless this is the only goal. Please reduce the percentage.',
+      type: 'error',
+    });
+    return;
+  }
 
     dispatch(addGoal({ name, targetAmount: target, percentage: percent }))
     setName('');
@@ -80,6 +89,17 @@ export default function Goal() {
   });
   return;
     }
+
+    const maxTransfer = (income * allocatedIncomePercentage) / 100;
+if (monthlyTransferred >= maxTransfer) {
+  showModal({
+    title: 'Limit Reached',
+    message: 'You have already transferred the allocated income for this month.',
+    type: 'info',
+  });
+  return;
+}
+
     dispatch(transferToGoals(income))
   };
 

@@ -6,6 +6,8 @@ const saveGoalsToLocalStorage = (state) => {
     goals: state.goals,
     allocatedIncomePercentage: state.allocatedIncomePercentage,
     savedTotal: state.savedTotal,
+    monthlyTransferred: state.monthlyTransferred,
+    lastResetMonth: state.lastResetMonth,
   }));
 };
 
@@ -15,6 +17,8 @@ const initialState = {
   goals: stored?.goals || [],
   allocatedIncomePercentage: stored?.allocatedIncomePercentage || 100,
   savedTotal: stored?.savedTotal || 0,
+  monthlyTransferred: stored?.monthlyTransferred || 0, 
+  lastResetMonth: stored?.lastResetMonth || dayjs().format('YYYY-MM'),
 };
 
 const goalSlice = createSlice({
@@ -118,27 +122,36 @@ const goalSlice = createSlice({
     },
 
     transferToGoals(state, action) {
-      const income = action.payload;
-      const amountToAllocate = (state.allocatedIncomePercentage / 100) * income;
-      let totalSavedThisTransfer = 0;
+  const income = action.payload;
+  const allocatedThisMonth = (state.allocatedIncomePercentage / 100) * income;
+  const remainingToTransfer = allocatedThisMonth - state.monthlyTransferred;
+  if (remainingToTransfer <= 0) {
+    return; 
+  }
+  let totalSavedThisTransfer = 0;
+  state.goals.forEach(goal => {
+    if (goal.savedAmount < goal.targetAmount) {
+      const goalShare = (goal.percentage / 100) * remainingToTransfer;
+      const remaining = goal.targetAmount - goal.savedAmount;
+      const amountToAdd = Math.min(goalShare, remaining);
+      goal.savedAmount += amountToAdd;
+      totalSavedThisTransfer += amountToAdd;
+    }
+  });
 
-      state.goals.forEach(goal => {
-        if (goal.savedAmount < goal.targetAmount) {
-          const goalShare = (goal.percentage / 100) * amountToAllocate;
-          const remaining = goal.targetAmount - goal.savedAmount;
-          const amountToAdd = Math.min(goalShare, remaining);
-          goal.savedAmount += amountToAdd;
-          totalSavedThisTransfer += amountToAdd;
-        }
-      });
+  state.monthlyTransferred += totalSavedThisTransfer;
+  state.savedTotal += totalSavedThisTransfer;
+  saveGoalsToLocalStorage(state);
+},
 
-      state.savedTotal += totalSavedThisTransfer;
-      saveGoalsToLocalStorage(state);
-    },
 
     autoTransferMonthly(state, action) {
       const currentDate = dayjs();
       const monthlyIncome = action.payload;
+        if (state.lastResetMonth !== currentDate.format('YYYY-MM')) {
+    state.monthlyTransferred = 0;
+    state.lastResetMonth = currentDate.format('YYYY-MM');
+  }
       const totalAllocation = (monthlyIncome * state.allocatedIncomePercentage) / 100;
 
       let totalSavedThisTransfer = 0;
@@ -165,9 +178,14 @@ const goalSlice = createSlice({
       state.savedTotal += totalSavedThisTransfer;
       saveGoalsToLocalStorage(state);
     },
+    resetMonthlyTransferred(state) {
+    state.monthlyTransferred = 0;
+    state.lastResetMonth = dayjs().format('YYYY-MM');
+    saveGoalsToLocalStorage(state);
+    }
   },
 });
 
-export const { addGoal, deleteGoal, updateGoalPercentage, updateAllGoalPercentages, setAllocatedIncomePercentage, resetGoalPercentages, transferToGoals, autoTransferMonthly} = goalSlice.actions;
+export const { addGoal, deleteGoal, updateGoalPercentage, updateAllGoalPercentages, setAllocatedIncomePercentage, resetGoalPercentages, transferToGoals, autoTransferMonthly, resetMonthlyTransferred} = goalSlice.actions;
 
 export default goalSlice.reducer;

@@ -18,7 +18,7 @@ function Summary() {
     .filter((t) => t.type === 'expense')
     .reduce((sum, t) => sum + Number(t.amount), 0);
 
-  const balance = income - totalExpenses;
+  const balance = income - totalExpenses - saved;
 
   useEffect(() => {
     if (

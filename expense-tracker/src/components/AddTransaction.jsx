@@ -61,7 +61,7 @@ function AddTransaction() {
   };
 
   const resetForm = () => {
-    setForm({ type: 'expense', description: '', amount: '', category: '', date: '' })
+    setForm({ type: 'expense', description: '', amount: '', category: '', date: new Date().toISOString().split('T')[0] })
     setShowDropdown(false)
   };
 
