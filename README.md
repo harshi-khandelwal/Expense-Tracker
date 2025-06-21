@@ -6,11 +6,6 @@ A powerful and user-friendly Expense Tracker app built with **React**, **Tailwin
 
 Check out the live app here: [Expense Tracker App](https://expense-tracker-blue-three-11.vercel.app/)
 
-## 📎 Useful Links
-
-- GitHub Repository: [View Source Code](https://github.com/yourusername/expense-tracker)
-- Demo Video: [Watch on YouTube](https://youtube.com/your-demo-link)
-
 ## 🧰 Tech Stack
 
 - React
