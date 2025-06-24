@@ -19,15 +19,11 @@ Check out the live app here: [Expense Tracker App](https://expense-tracker-blue-
 
 ## 🚀 Features
 
-### 🔐 Authentication
-- Sign up, login, logout with Appwrite auth
-- User-specific data storage
 
 ### 💼 Income & Expenses
 - Add, edit, and delete transactions
 - Mark transactions as income or expense
 - Assign categories (e.g., Food, Rent, Travel, etc.)
-- Add descriptions and notes (using TinyMCE rich text editor)
 
 ### 📊 Summary Dashboard
 - Displays current balance
@@ -39,12 +35,10 @@ Check out the live app here: [Expense Tracker App](https://expense-tracker-blue-
 - Filter transactions by:
   - Date range
   - Category
-  - Type (Income/Expense)
-- Sort by amount/date (ascending/descending)
 
 ### 📈 Analytics & Charts
-- Monthly & weekly overviews
-- Interactive charts (bar, pie, line)
+- Monthly overview
+- Interactive charts (bar, pie)
 - Track spending trends visually
 
 ### 📑 Monthly Report (PDF)
@@ -53,7 +47,7 @@ Check out the live app here: [Expense Tracker App](https://expense-tracker-blue-
 - Export/download as PDF using jsPDF + html2canvas
 
 ### 🧾 Budget Management
-- Set monthly/weekly budgets
+- Set monthly budgets
 - Get notified when 80% of the budget is used
 - Prevent or confirm over-budget transactions
 
