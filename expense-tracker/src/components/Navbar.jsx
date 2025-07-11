@@ -12,7 +12,7 @@ const Navbar = () => {
   const location = useLocation();
 
   const isActive = (path) => location.pathname === path;
-  const [themeMode, setThememode] = useState("light")
+  const [themeMode, setThememode] = useState("dark")
   const lightTheme = () => setThememode('light');
   const darkTheme = () => setThememode('dark');
 
