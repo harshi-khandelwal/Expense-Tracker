@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setBudget } from '../features/budgets/budgetSlice';
+import { MdDelete } from "react-icons/md";
+import { CiEdit } from "react-icons/ci";
 
 export default function SetBudget() {
   const dispatch = useDispatch();
@@ -75,17 +77,19 @@ export default function SetBudget() {
         {/* edit */}
         <button
           onClick={handleEdit}
-          className="bg-blue-950 text-white px-4 py-1 rounded hover:bg-blue-900"
+          className="bg-blue-950 text-white px-4 py-1 rounded hover:bg-blue-900 flex items-center gap-2"
         >
-          Edit
+          <CiEdit />
+          <span>Edit</span>
         </button>
         {/* reset */}
-        <button 
-          onClick={handleReset}
-          className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700"
-        >
-          Reset
-        </button>
+        <button
+               onClick={handleReset}
+               className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700 flex items-center gap-2"
+             >
+               <MdDelete />
+               <span>Reset</span>
+             </button>
       </div>
     </div>
   )}

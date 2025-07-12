@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setIncome, resetIncome } from '../features/income/incomeSlice';
+import { MdDelete } from "react-icons/md";
+import { CiEdit } from "react-icons/ci";
 
 export default function SetIncome() {
   const [input, setInput] = useState('');
@@ -73,23 +75,26 @@ export default function SetIncome() {
   {income > 0 && !isEditing && (
     <div className="text-center space-y-2 text-gray-900 dark:text-white">
       <div className="text-blue-900 dark:text-blue-300 text-3xl font-semibold">
+       
         Your Monthly Income: Rs. {income}
       </div>
       <div className="flex justify-center gap-4">
         {/* edit */}
         <button
           onClick={handleEdit}
-          className="bg-blue-950 text-white px-4 py-1 rounded hover:bg-blue-900"
+          className="bg-blue-950 text-white px-4 py-1 rounded hover:bg-blue-900 flex items-center gap-2"
         >
-          Edit
+          <CiEdit />
+          <span>Edit</span>
         </button>
         {/* reset */}
-        <button
-          onClick={handleReset}
-          className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700"
-        >
-          Reset
-        </button>
+       <button
+        onClick={handleReset}
+        className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700 flex items-center gap-2"
+      >
+        <MdDelete />
+        <span>Reset</span>
+      </button>
       </div>
     </div>
   )}
